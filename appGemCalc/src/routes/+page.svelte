@@ -5,7 +5,7 @@
   import 'katex/dist/katex.min.css';
 
   let messages = [
-    { role: 'assistant', content: '¡Hola! Soy tu **Mentor de Cálculo**. ¿Qué concepto o ejercicio te gustaría explorar hoy?' }
+    { role: 'user', parts: [{text:'¡Hola! Soy tu **Mentor de Cálculo**. ¿Qué concepto o ejercicio te gustaría explorar hoy?' }] }
   ];
   let userInput = '';
   let chatContainer;
@@ -44,11 +44,12 @@
   async function sendMessage() {
       if (!userInput.trim()) return;
 
-      const userMsg = { role: 'user', content: userInput };
+      //const userMsg = { role: 'user', content: userInput };
+      const userMsg = { role: 'user', parts: [{text:userInput.trim()}] };
       // Guardamos el historial localmente para la UI
       messages = [...messages, userMsg];
       
-      const textToSend = userInput;
+      //const textToSend = userInput;
       userInput = '';
       await scrollToBottom();
 
@@ -59,14 +60,14 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ 
                   // Enviamos todo el historial menos el primer mensaje de bienvenida
-                  messages: messages.map(m => ({ role: m.role, content: m.content })) 
+                  messages: messages //.map(m => ({ role: m.role, content: m.content })) 
               })
-          });
+          }); 
 
           const data = await response.json();
           
           if (data.message) {
-              messages = [...messages, { role: 'assistant', content: data.message }];
+              messages = [...messages, { role: 'user', parts: [{text: data.message}] }];
           } else {
               throw new Error("Respuesta vacía");
           }
@@ -75,8 +76,8 @@
       } catch (error) {
           console.error("Error al conectar:", error);
           messages = [...messages, { 
-              role: 'assistant', 
-              content: 'Lo siento, tuve un problema de conexión. ¿Puedes repetir?' 
+              role: 'user', 
+              parts: [{text: 'Lo siento, tuve un problema de conexión. ¿Puedes repetir?'}] 
           }];
       }
   }
@@ -101,7 +102,7 @@
     {#each messages as msg}
       <div class="message {msg.role}">
         <div class="bubble">
-          {@html renderContent(msg.content)}
+          {@html renderContent(msg.parts[0].text)}
         </div>
       </div>
     {/each}

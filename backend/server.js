@@ -37,7 +37,7 @@ const chat = ai.chats.create({
         },
         {
             role: "model",
-            parts: [{ text: SYSTEM_PROMPT }]
+            parts: [{ text: SYSTEM_PROMPT }] 
         }
     ]
 });
@@ -56,7 +56,7 @@ app.post('/api/chat', async (req, res) => {
         // Si no hay mensajes del usuario todavía, enviamos un historial vacío
         // Si los hay, empezamos el historial desde ese primer mensaje del usuario
         //const validHistory = firstUserIndex !== -1 ? messages.slice(firstUserIndex, -1) : [];
-
+ 
         // 2. Traducir el historial del formato OpenAI/Svelte al formato Gemini
         // Gemini usa "user" y "model" (en lugar de "assistant")
         // Además, el contenido va dentro de un array de "parts"
@@ -65,7 +65,7 @@ app.post('/api/chat', async (req, res) => {
             parts: [{ text: m.content }],
         }));
          */
-        const lastMessage = messages[messages.length - 1].content;
+        const lastMessage = messages[messages.length - 1].parts[0].text; // El último mensaje del usuario (el que acaba de enviar)
 
         // 3. Iniciar chat con historial y enviar el nuevo mensaje
         /* const chat = model.startChat({
